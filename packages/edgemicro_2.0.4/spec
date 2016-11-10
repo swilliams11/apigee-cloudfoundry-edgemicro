@@ -1,0 +1,8 @@
+---
+name: edgemicro_2.0.4
+
+dependencies:
+- node_6.9.1
+
+files:
+- edgemicro/apigee-edge-micro.zip

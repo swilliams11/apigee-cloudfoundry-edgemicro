@@ -1,0 +1,7 @@
+---
+name: node_7.0.0
+
+dependencies:
+
+files:
+- node_7.0.0/node-v7.0.0-linux-x64.tar.xz

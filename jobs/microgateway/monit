@@ -1,0 +1,5 @@
+check process microgateway
+  with pidfile /var/vcap/sys/run/microgateway/microgateway.pid
+  start program "/var/vcap/jobs/microgateway/bin/ctl start"
+  stop program "/var/vcap/jobs/microgateway/bin/ctl stop"
+  group vcap

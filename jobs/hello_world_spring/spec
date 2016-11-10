@@ -1,0 +1,9 @@
+---
+name: hello_world_spring
+templates:
+  ctl.erb: bin/ctl
+
+packages:
+- jdk_8u111
+- gradle_3.1
+- hello_world_spring

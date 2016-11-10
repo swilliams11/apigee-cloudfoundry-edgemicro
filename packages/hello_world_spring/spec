@@ -1,0 +1,9 @@
+---
+name: hello_world_spring
+
+dependencies:
+- jdk_8u111
+- gradle_3.1
+
+files:
+- hello_world_spring/**/*

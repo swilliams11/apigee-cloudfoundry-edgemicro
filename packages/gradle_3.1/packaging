@@ -1,0 +1,8 @@
+# abort script on any command that exits with a non zero value
+set -e -x
+
+echo "installing gradle"
+unzip gradle_3.1/gradle-3.1-bin.zip -d ${BOSH_INSTALL_TARGET}
+
+sudo ln -s /var/vcap/packages/gradle_3.1/gradle-3.1/bin/gradle /usr/local/bin/gradle
+echo "created gradle symlink"

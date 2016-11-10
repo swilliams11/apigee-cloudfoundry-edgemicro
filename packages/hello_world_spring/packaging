@@ -1,0 +1,12 @@
+# abort script on any command that exits with a non zero value
+set -e -x
+
+cp -r hello_world_spring/* ${BOSH_INSTALL_TARGET}
+
+#cd ${BOSH_INSTALL_TARGET}
+
+#find .
+
+#mkdir -p ${BOSH_INSTALL_TARGET}/gem_home
+
+#/var/vcap/packages/hello_world_spring/complete/gradlew bootRun

@@ -1,0 +1,3 @@
+[submodule "src/hello_world_spring"]
+	path = src/hello_world_spring
+	url = git@github.com:spring-guides/gs-rest-service.git

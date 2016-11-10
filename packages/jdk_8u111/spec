@@ -1,0 +1,7 @@
+---
+name: jdk_8u111
+
+dependencies:
+
+files:
+- jdk_8u111/jdk-8u111-linux-x64.tar.gz

@@ -1,0 +1,68 @@
+#!/bin/bash
+
+RUN_DIR=/var/vcap/sys/run/hello_world_spring
+LOG_DIR=/var/vcap/sys/log/hello_world_spring
+LOG_FILE=${LOG_DIR}/target_service.log
+PIDFILE=${RUN_DIR}/hello_world_spring.pid
+
+mkdir -p $RUN_DIR $LOG_DIR
+chown -R vcap:vcap $RUN_DIR $LOG_DIR
+
+
+#export PATH=/var/vcap/packages/node_7.0.0/node-v7.0.0-linux-x64/bin:$PATH
+
+function pid_exists() {
+  ps -p $1 &> /dev/null
+  #begin
+  #  Process.getpgid( $1 )
+  #  true
+  #rescue Errno::ESRCH
+  #  false
+  #end
+}
+
+case $1 in
+
+  start)
+    echo "start called..." >> $LOG_FILE
+
+    #PID=$(head -1 $PIDFILE)
+
+    #if [ ! -z $PID ] && pid_exists $PID; then
+    #  echo "process is already running...$PID" >> $LOGFILE
+    #  exit 0
+    #fi
+    echo $$ > $PIDFILE
+    echo $$ &> $LOG_FILE
+
+    export JAVA_HOME=/var/vcap/packages/jdk_8u111/jdk1.8.0_111
+    export PATH=$JAVA_HOME/bin:$PATH
+    echo "exporting path and creating symlinks" >> $LOG_FILE
+    sudo ln -s /var/vcap/packages/gradle_3.1/gradle-3.1/bin/gradle /usr/local/bin/gradle
+    echo $PATH >> $LOG_FILE
+
+    echo "starting target service..." >> $LOG_FILE
+    sudo chmod 777 /var/vcap/packages/hello_world_spring/complete/gradlew >> $LOG_FILE
+    cd /var/vcap/packages/hello_world_spring/complete/
+    #sudo ./gradlew &> $LOG_DIR/target_service.log
+    exec sudo ./gradlew bootRun >> $LOG_FILE
+    #echo "target service started successfully!" >> $LOG_FILE
+    #echo $! > $PIDFILE
+    #echo $$ > $PIDFILE
+    #echo $$ >> $LOG_FILE
+    ;;
+
+  stop)
+    PID=$(head -1 $PIDFILE)
+    if [ ! -z $PID ] && pid_exists $PID; then
+      kill $PID
+    fi
+    while [ -e /proc/$PID ]; do sleep 0.1; done
+    rm -f $PIDFILE
+    ;;
+
+  *)
+    echo "Usage: ctl {start|stop}" ;;
+
+esac
+exit 0

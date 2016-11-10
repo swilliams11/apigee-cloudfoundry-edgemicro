@@ -1,0 +1,8 @@
+---
+name: gradle_3.1
+
+dependencies:
+- jdk_8u111
+
+files:
+- gradle_3.1/gradle-3.1-bin.zip

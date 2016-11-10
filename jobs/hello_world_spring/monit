@@ -1,0 +1,5 @@
+check process hello_world_spring
+  with pidfile /var/vcap/sys/run/hello_world_spring/hello_world_spring.pid
+  start program "/var/vcap/jobs/hello_world_spring/bin/ctl start"
+  stop program "/var/vcap/jobs/hello_world_spring/bin/ctl stop"
+  group vcap

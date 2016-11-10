@@ -1,0 +1,7 @@
+# abort script on any command that exits with a non zero value
+set -e -x
+
+tar xzf jdk_8u111/jdk-*.tar.gz -C ${BOSH_INSTALL_TARGET}
+
+export JAVA_HOME=/var/vcap/packages/jdk_8u111/jdk1.8.0_111
+export PATH=$JAVA_HOME/bin:$PATH

@@ -1,0 +1,94 @@
+#!/bin/bash
+
+RUN_DIR=/var/vcap/sys/run/microgateway
+LOG_DIR=/var/vcap/sys/log/microgateway
+PIDFILE=${RUN_DIR}/microgateway.pid
+
+
+mkdir -p $RUN_DIR $LOG_DIR
+chown -R vcap:vcap $RUN_DIR $LOG_DIR
+
+#export PATH=/var/vcap/packages/node_6.9.1/node/node-v6.9.1-linux-x64/bin:$PATH
+export PATH=/var/vcap/packages/node_7.0.0/node-v7.0.0-linux-x64/bin:$PATH
+
+function pid_exists() {
+  ps -p $1 &> /dev/null
+}
+
+case $1 in
+
+  start)
+    #mkdir -p $RUN_DIR $LOG_DIR
+    #chown -R vcap:vcap $RUN_DIR $LOG_DIR
+    echo "start called..."
+    echo $$ > $PIDFILE
+
+    echo "exporting path and creating symlinks"
+    export PATH=/var/vcap/packages/node_7.0.0/node-v7.0.0-linux-x64/bin:$PATH
+    sudo ln -s /var/vcap/packages/node_7.0.0/node-v7.0.0-linux-x64/bin/node /usr/local/bin/node
+    sudo ln -s /var/vcap/packages/node_7.0.0/node-v7.0.0-linux-x64/bin/npm /usr/local/bin/npm
+    #sudo ln -s /var/vcap/packages/edgemicro_2.0.4/apigee-edge-micro-2.0.4/cli/edgemicro /usr/local/bin/edgemicro
+    echo $PATH
+
+    #echo "starting target service..."
+    #/var/vcap/packages/hello_world_spring/complete/gradlew bootRun &> $LOG_DIR/target_service.log
+    #echo "target service started successfully!"/
+
+    #mkdir /var/vcap/packages/edgemicro_app
+
+    #cd /var/vcap/packages/edgemicro_app
+    sudo npm install edgemicro@latest -g >> $LOG_DIR/npm_install.log
+
+    echo "intializing edgemicro..."
+    edgemicro init >> $LOG_DIR/edgemicro_init.log
+
+    echo "calling edgemicro configure..."
+
+    edgemicro configure -o <%= p("org") %> \
+      -e <%= p("env") %> \
+      -u <%= p("username") %> \
+      -p <%= p("password") %> \
+      >> $LOG_DIR/edgemicro_configure.log
+      2> $LOG_DIR/edgemicro.stderr.log
+
+    #/var/vcap/packages/edgemicro_2.0.4/apigee-edge-micro-2.0.4/cli/edgemicro configure -o <%= p("org") %> \
+    #  -e <%= p("env") %> \
+    #  -u <%= p("username") %> \
+    #  -p <%= p("password") %> \
+    #  &> $LOG_DIR/edgemicro_configure.log
+    #  2> $LOG_DIR/edgemicro.stderr.log
+
+    echo "edgemicro configure complete..."
+
+    echo "greping for the key"
+    grep key: $LOG_DIR/edgemicro_configure.log | sed 's/key:\s//' | sed -e 's/^[ \t]*//' \
+      &> $LOG_DIR/key.log
+
+    echo "greping for the secret"
+    grep secret: $LOG_DIR/edgemicro_configure.log | sed 's/secret:\s//' | sed -e 's/^[ \t]*//' \
+      &> $LOG_DIR/secret.log
+
+    echo "starting microgateway..."
+    #-c -p <%= p("cluster_processes") %>
+    #--port <%= p("port") %>
+    exec edgemicro start -o <%= p("org") %> \
+      -e <%= p("env") %> \
+      -k $(cat $LOG_DIR/key.log) \
+      -s $(cat $LOG_DIR/secret.log) \
+      >> $LOG_DIR/startup.log
+    ;;
+
+  stop)
+    PID=$(head -1 $PIDFILE)
+    if [ ! -z $PID ] && pid_exists $PID; then
+      kill $PID
+    fi
+    while [ -e /proc/$PID ]; do sleep 0.1; done
+    rm -f $PIDFILE
+    ;;
+
+  *)
+    echo "Usage: ctl {start|stop}" ;;
+
+esac
+exit 0

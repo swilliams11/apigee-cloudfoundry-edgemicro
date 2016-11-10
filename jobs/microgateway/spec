@@ -1,0 +1,22 @@
+---
+name: microgateway
+templates:
+  ctl.erb: bin/ctl
+
+packages:
+- node_7.0.0
+
+properties:
+  port:
+    description: "Port on which edgemicro is listening"
+    default: 8000
+  org:
+    default: org
+  env:
+    default: env
+  username:
+    default: orgadmin
+  password:
+    default: orgadminpassword
+  cluster_processes:
+    default: 2
