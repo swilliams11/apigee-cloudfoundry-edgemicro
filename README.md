@@ -55,7 +55,7 @@ properties:
 blobs/jdk_8u111/jdk-8u111-linux-x64.tar.gz
 ```
 
-6.  Pull the git submodule located in `src/hello_world_spring`.
+6.  Pull the git submodule located in `src/hello_world_spring`. See the [Git Submodules section](#git-submodules).
 
 ## Deploy to Bosh
 The following commands assume that you are using Bosh lite. It will setup your bosh lite environment
@@ -155,6 +155,15 @@ secret.log
 startup.log
 ```
 
-## Submodules
+## Git Submodules
 This product uses the following submodule, which is stored in `src/hello_world_spring`.
 https://github.com/spring-guides/gs-rest-service
+
+
+```
+cd src/hello_world_spring
+
+git submodule init
+
+git submodule update
+```
