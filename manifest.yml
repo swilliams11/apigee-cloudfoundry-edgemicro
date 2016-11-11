@@ -58,9 +58,9 @@ jobs:
     static_ips:
     - 10.244.0.2
   properties: {
-    port: 8888,
+    port: 8000,
     org: org,
-    env: test,
+    env: env,
     username: orgadmin,
     password: orgpassword,
     cluster_processes: 2

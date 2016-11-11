@@ -9,7 +9,10 @@ The purpose of this repository is to:
 A subsequent goal is to start both Microgateway and Spring Boot on the same VM.
 
 ## What is completed?
-Items 1 and 2 are complete.  
+Items 1, 2, 3 and 4 are complete.  
+I used the existing [Bosh Nginx release](https://github.com/cloudfoundry-community/nginx-release) to handle this.  
+
+TLS is configured on Nginx with a self-signed certificate.  
 
 ## Bosh Lite
 I used [Bosh lite](https://github.com/cloudfoundry/bosh-lite) to test it.
@@ -95,18 +98,32 @@ bosh delete deployment microgateway
 bosh ssh
 ```
 
-## Test Microgateway
+## Setup a Route to Bosh
 Setup a route to your Bosh instance.
+The `10.244.5.0/24` is for Nginx.
+
 ```
 sudo route add -net 10.244.0.0/19 192.168.50.4
+sudo route add -net 10.244.5.0/24 192.168.50.4
+
 ```
 
 Linux users
 ```
 sudo ip route add 10.244.0.0/19 via 192.168.50.4
+sudo ip route add 10.244.5.0/24 via 192.168.50.4
 ```
 
-### Authorization Token
+## Nginx Configuration
+I will fork the [Bosh Nginx release](https://github.com/cloudfoundry-community/nginx-release) that way you can see how to configure Nginx with Bosh.
+
+### Send a Request to Nginx
+Request flows as shown below:
+```
+Nginx -> Microgateway -> Spring Boot Target Service
+```
+
+#### 1. Obtain an Authorization Token
 First you have to obtain an access token.
 ```
 curl -i -X POST --user client_id:client_secret "https://org-env.apigee.net/edgemicro-auth/token" -d '{"grant_type": "client_credentials"}' -H "Content-Type: application/json"
@@ -117,34 +134,76 @@ The response is show below.
 {"token":"jwt"}
 ```
 
-### Hello Greeting
-The above response will have a JWT. Include that in the `Authorization` header as a `Bearer` token.
-
+#### 2a. Send the Request with the Authorization Token and Use Nginx IP Address
+Take the JWT from the response above and include it in the `Authorization` header as a `Bearer` token.  In this case I need to pass `--insecure` because I used a self-signed certificate to configure TLS on Nginx.
 ```
-curl -H "Authorization: Bearer jwt" http://10.244.0.2:8000/edgemicro_bosh_hello/greeting
+curl -X GET -H "Authorization: Bearer jwt" https://10.244.5.2/edgemicro_bosh_hello/greeting --insecure
+```
+If you don't include the Authorization header then you will receive a 401 unauthorized error.
+
+#### 2b. Send the Request Using Domain Name
+To use this approach you have to edit your `/etc/hosts` file to include the following line:
+```
+10.244.5.2      springhello.io
 ```
 
-Response
+Then execute the following command.
+```
+curl -X GET -H "Authorization: Bearer jwt" https://springhello.io/edgemicro_bosh_hello/greeting --insecure
+```
+
+##### Response
 ```
 {"id":2,"content":"Hello, World!"}
 ```
 
-## Test Spring Boot Hello World!
-You can access the target server directly with the following curl command.
+### Direct Access to Microgateway was Disabled
+Firewall rules are configured such that access to the Microgateway is only allowed via Nginx.  
+However, at this time you can send requests directly to the microgateway.
+```
+curl -H "Authorization: Bearer jwt" http://10.244.0.2:8000/edgemicro_bosh_hello/greeting
+```
+
+## Target Server - Test Spring Boot Hello World!
+Note that you cannot access the target server directly with the following curl command.
 
 ```
 curl http://10.244.0.6:8080/greeting
 ```
 
+You should receive the error below. The reason is that the firewall only allows access via the Microgateway.
+```
+curl: (7) Failed to connect to 10.244.0.6 port 8080: Operation timed out
+```
+
 ## Logging
 There are several log files that are created and you can ssh into the VM to see the logs. Or use Bosh cli to download the log file to your local machine.
 
-### Logging Directory
+To download the logs:
+```
+bosh vms
+```
+Which will display something like:
+
+```
++------------------------------------------------+---------+----+---------+------------+
+| VM                                             | State   | AZ | VM Type | IPs        |
++------------------------------------------------+---------+----+---------+------------+
+| nginx/0 (2c5cf105-1ddc-41ab-a115-0171bdbe7d83) | running | z1 | small   | 11.24.51.2 |
++------------------------------------------------+---------+----+---------+------------+
+```
+
+Then enter the following command. This will download the log to your local machine.
+```
+bosh logs job 2c5cf105-1ddc-41ab-a115-0171bdbe7d83
+```
+
+### Microgateway Logging Directory
 ```
 /var/vcap/sys/log/edgemicro
 ```
 
-### Log Files Created
+### Microgateway Log Files Created
 Log files created are:
 ```
 edgemicro_init.log

@@ -15,6 +15,20 @@ function pid_exists() {
   ps -p $1 &> /dev/null
 }
 
+function configure_firewall(){
+  sudo iptables -P INPUT ACCEPT
+  sudo iptables -F
+  sudo iptables -A INPUT -i lo -j ACCEPT
+  sudo iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+  sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+  sudo iptables -A INPUT -s 10.244.5.2 -p tcp --dport 8000 -j ACCEPT
+  sudo iptables -P INPUT DROP
+  sudo iptables -P FORWARD DROP
+  sudo iptables -P OUTPUT ACCEPT
+  sudo iptables-save >> $LOG_DIR/firewall.log
+  #sudo iptables -L -v
+}
+
 case $1 in
 
   start)
@@ -68,6 +82,7 @@ case $1 in
     grep secret: $LOG_DIR/edgemicro_configure.log | sed 's/secret:\s//' | sed -e 's/^[ \t]*//' \
       &> $LOG_DIR/secret.log
 
+    configure_firewall
     echo "starting microgateway..."
     #-c -p <%= p("cluster_processes") %>
     #--port <%= p("port") %>
