@@ -1,12 +1,13 @@
 # apigee-cloudfoundry-edgemicro
 
 The purpose of this repository is to:
+
 1. spin up a Microgateway instance with Bosh
 2. spin up a sample Spring Boot target service (hello world)
 3. restrict access to the target service via Microgateway (firewall rules)
 4. spin up an Nginx instance to sit in front of Micrograteway to terminate SSL and load balance multiple Microgateway instances
 
-A subsequent goal is to start both Microgateway and Spring Boot on the same VM.
+A subsequent goal is to start both Microgateway and Spring Boot on the same VM.  This task was completed with the [edgemicro-decorator](https://github.com/swilliams11/edgemicro-decorator).
 
 ## What is completed?
 Items 1, 2, 3 and 4 are complete.  
@@ -59,6 +60,8 @@ blobs/jdk_8u111/jdk-8u111-linux-x64.tar.gz
 ```
 
 6.  Pull the git submodule located in `src/hello_world_spring`. See the [Git Submodules section](#git-submodules).
+
+7. Pull the forked copy of [Nginx-release](https://github.com/swilliams11/nginx-release) and follow the instructions in that README to start Nginx.  
 
 ## Deploy to Bosh
 The following commands assume that you are using Bosh lite. It will setup your bosh lite environment
@@ -115,7 +118,7 @@ sudo ip route add 10.244.5.0/24 via 192.168.50.4
 ```
 
 ## Nginx Configuration
-I will fork the [Bosh Nginx release](https://github.com/cloudfoundry-community/nginx-release) that way you can see how to configure Nginx with Bosh.
+I forked the [Bosh Nginx release](https://github.com/cloudfoundry-community/nginx-release), therefore the Nginx configuration is completed [here](https://github.com/swilliams11/nginx-release).
 
 ### Send a Request to Nginx
 Request flows as shown below:
@@ -158,7 +161,7 @@ curl -X GET -H "Authorization: Bearer jwt" https://springhello.io/edgemicro_bosh
 ```
 
 ### Direct Access to Microgateway was Disabled
-Firewall rules are configured such that access to the Microgateway is only allowed via Nginx.  
+Firewall rules will be configured such that access to the Microgateway is only allowed via Nginx.  
 However, at this time you can send requests directly to the microgateway.
 ```
 curl -H "Authorization: Bearer jwt" http://10.244.0.2:8000/edgemicro_bosh_hello/greeting
