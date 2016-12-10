@@ -160,8 +160,19 @@ curl -X GET -H "Authorization: Bearer jwt" https://springhello.io/edgemicro_bosh
 {"id":2,"content":"Hello, World!"}
 ```
 
-### Direct Access to Microgateway was Disabled
-Firewall rules will be configured such that access to the Microgateway is only allowed via Nginx.  
+### Direct Access to Microgateway was Enabled
+A firewall rules exist so that direct access to the Microgateway is only allowed via Nginx, but it is commented out.
+The following file has the shell script which enables/disables direct access to Microgateway
+`jobs/microgateway/templates/ctl.erb`
+
+Lines 24 through 27 from that file are shown below.  
+```
+#uncomment the line below to disable direct access to the Microgateway (only accessible via nginx)
+#sudo iptables -A INPUT -s 10.244.5.2 -p tcp --dport 8000 -j ACCEPT
+#comment out the line below to disable direct access to the Microgateway
+sudo iptables -A INPUT -p tcp --dport 8000 -j ACCEPT
+```
+
 However, at this time you can send requests directly to the microgateway.
 ```
 curl -H "Authorization: Bearer jwt" http://10.244.1.2:8000/edgemicro_bosh_hello/greeting
@@ -229,3 +240,30 @@ git submodule init
 
 git submodule update
 ```
+
+
+# Testing
+
+## Gatling Testing
+[Gatling](http://gatling.io/#/) tests are included in the `gatling` directory.  
+
+
+### Execute tests
+1. Update the following fields in `gatling/src/test/scala/edgemicro/BasicSimulation.scala`
+
+Line 24 - 28 are shown below.
+```
+//UPDATE THESE VALUES
+val org = "org"
+val env = "env"
+val clientId = "clientId"
+val secret = "clientsecret"
+```
+
+2. Execute the following commands
+```
+cd gatling
+mvn gatling:execute -Dgatling.simulationClass=edgemicro.BasicSimulation
+```
+
+### Gatlting Results
