@@ -106,14 +106,14 @@ Setup a route to your Bosh instance.
 The `10.244.5.0/24` is for Nginx.
 
 ```
-sudo route add -net 10.244.1.0/19 192.168.50.4
+sudo route add -net 10.244.1.0/24 192.168.50.4
 sudo route add -net 10.244.5.0/24 192.168.50.4
 
 ```
 
 Linux users
 ```
-sudo ip route add 10.244.1.0/19 via 192.168.50.4
+sudo ip route add 10.244.1.0/24 via 192.168.50.4
 sudo ip route add 10.244.5.0/24 via 192.168.50.4
 ```
 
