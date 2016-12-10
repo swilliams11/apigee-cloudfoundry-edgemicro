@@ -164,14 +164,14 @@ curl -X GET -H "Authorization: Bearer jwt" https://springhello.io/edgemicro_bosh
 Firewall rules will be configured such that access to the Microgateway is only allowed via Nginx.  
 However, at this time you can send requests directly to the microgateway.
 ```
-curl -H "Authorization: Bearer jwt" http://10.244.0.2:8000/edgemicro_bosh_hello/greeting
+curl -H "Authorization: Bearer jwt" http://10.244.1.2:8000/edgemicro_bosh_hello/greeting
 ```
 
 ## Target Server - Test Spring Boot Hello World!
 Note that you cannot access the target server directly with the following curl command.
 
 ```
-curl http://10.244.0.6:8080/greeting
+curl http://10.244.1.6:8080/greeting
 ```
 
 You should receive the error below. The reason is that the firewall only allows access via the Microgateway.
