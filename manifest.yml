@@ -9,9 +9,9 @@ releases:
 networks:
 - name: default
   subnets:
-  - range: 10.244.0.0/28
-    reserved: [10.244.0.1]
-    static: [10.244.0.2,10.244.0.6,10.244.0.10]
+  - range: 10.244.1.0/24
+    reserved: [10.244.1.1]
+    static: [10.244.1.2,10.244.1.6,10.244.1.10]
     cloud_properties:
       name: random
 
@@ -43,7 +43,7 @@ jobs:
   networks:
   - name: default
     static_ips:
-    - 10.244.0.6
+    - 10.244.1.6
   properties: {
     port: 8080
   }
@@ -56,7 +56,7 @@ jobs:
   networks:
   - name: default
     static_ips:
-    - 10.244.0.2
+    - 10.244.1.2
   properties: {
     port: 8000,
     org: org,

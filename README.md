@@ -106,14 +106,14 @@ Setup a route to your Bosh instance.
 The `10.244.5.0/24` is for Nginx.
 
 ```
-sudo route add -net 10.244.0.0/19 192.168.50.4
+sudo route add -net 10.244.1.0/19 192.168.50.4
 sudo route add -net 10.244.5.0/24 192.168.50.4
 
 ```
 
 Linux users
 ```
-sudo ip route add 10.244.0.0/19 via 192.168.50.4
+sudo ip route add 10.244.1.0/19 via 192.168.50.4
 sudo ip route add 10.244.5.0/24 via 192.168.50.4
 ```
 
@@ -176,7 +176,7 @@ curl http://10.244.0.6:8080/greeting
 
 You should receive the error below. The reason is that the firewall only allows access via the Microgateway.
 ```
-curl: (7) Failed to connect to 10.244.0.6 port 8080: Operation timed out
+curl: (7) Failed to connect to 10.244.1.6 port 8080: Operation timed out
 ```
 
 ## Logging
