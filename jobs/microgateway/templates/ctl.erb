@@ -54,7 +54,9 @@ case $1 in
     #mkdir /var/vcap/packages/edgemicro_app
 
     #cd /var/vcap/packages/edgemicro_app
-    sudo npm install edgemicro@latest -g >> $LOG_DIR/npm_install.log
+    #uncomment this line if you want the latest release. this could pull beta versions
+    #sudo npm install edgemicro@latest -g >> $LOG_DIR/npm_install.log
+    sudo npm install edgemicro@2.3.1 -g >> $LOG_DIR/npm_install.log
 
     echo "intializing edgemicro..."
     edgemicro init >> $LOG_DIR/edgemicro_init.log

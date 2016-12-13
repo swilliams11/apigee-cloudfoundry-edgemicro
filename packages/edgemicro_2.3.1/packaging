@@ -1,0 +1,9 @@
+# abort script on any command that exits with a non zero value
+set -e -x
+
+echo "installing microgateway"
+unzip edgemicro/apigee-edge-micro.zip -d ${BOSH_INSTALL_TARGET}
+
+#export PATH=/var/vcap/packages/edgemicro/node/node-v6.9.1-linux-x64/bin:$PATH
+sudo ln -s /var/vcap/packages/edgemicro_2.3.1/apigee-edge-micro-2.3.1/cli /usr/local/bin/edgemicro
+echo "created symlink"
