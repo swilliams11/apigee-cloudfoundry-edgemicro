@@ -74,7 +74,7 @@ class BasicSimulation extends Simulation {
   Setup the http object that will be used by all the gatling scenarios.
   */
   val httpConf = http
-    .baseURL("https://10.244.1.2:8000/edgemicro_bosh_hello") // Here is the root for all relative URLs
+    .baseURL("http://10.244.1.2:8000/edgemicro_bosh_hello") // Here is the root for all relative URLs
     .acceptHeader("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8") // Here are the common headers
     .doNotTrackHeader("1")
     .acceptLanguageHeader("en-US,en;q=0.5")
@@ -98,7 +98,7 @@ class BasicSimulation extends Simulation {
       ).pause(100 milliseconds)
     }
     .exec(http("Greeting")
-      .get("/")
+      .get("/greeting")
       .header("Authorization", "Bearer ${jwt}"))
     .pause(100 milliseconds)
 
